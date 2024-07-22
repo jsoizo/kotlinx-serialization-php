@@ -1,0 +1,22 @@
+[versions]
+agp = "8.2.2"
+kotlin = "2.0.0"
+maven-publish = "0.28.0"
+android-minSdk = "24"
+android-compileSdk = "34"
+kover = "0.8.2"
+ktlint = "12.1.1"
+kotlinx-serialization = "1.7.1"
+
+[libraries]
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+maven-publish = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.publish", version.ref = "maven-publish" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+
+[plugins]
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+powerAssert = { id = "org.jetbrains.kotlin.plugin.power-assert", version.ref = "kotlin" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
