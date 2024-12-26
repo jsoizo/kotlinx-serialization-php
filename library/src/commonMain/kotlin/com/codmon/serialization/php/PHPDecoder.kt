@@ -110,7 +110,7 @@ class PHPDecoder(
         expect(':')
         expect('"')
 
-        val result = decodeStringRecursive(length, StringBuilder())
+        val result = buildString { appendStringRecursive(length) }
         expect('"')
         return result
     }
@@ -122,11 +122,8 @@ class PHPDecoder(
         return result
     }
 
-    private tailrec fun decodeStringRecursive(
-        remainingLength: Int,
-        acc: StringBuilder,
-    ): String {
-        if (remainingLength <= 0) return acc.toString()
+    private tailrec fun StringBuilder.appendStringRecursive(remainingLength: Int) {
+        if (remainingLength <= 0) return
 
         val chunkSize = decodeStringChunkSize
         val endPosition = (position + chunkSize).coerceAtMost(input.length)
@@ -136,10 +133,10 @@ class PHPDecoder(
         val newReadBytes = readBytes.sliceArray(0 until bytesToRead)
         val readChars = newReadBytes.decodeToString()
 
-        acc.append(readChars)
+        append(readChars)
         position += readChars.length
 
-        return decodeStringRecursive(remainingLength - bytesToRead, acc)
+        appendStringRecursive(remainingLength - bytesToRead)
     }
 
     override fun decodeEnum(enumDescriptor: SerialDescriptor): Int {
