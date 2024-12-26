@@ -50,7 +50,14 @@ jobs:
       - name: Verify dependencies
         run: ./gradlew dependencies
 
-      - name: Build and run tests
-        run: ./gradlew allTests
+      - name: Run tests and generate coverage report
+        run: ./gradlew allTest koverXmlReport
         env:
           PHP_EXECUTABLE_PATH: ${{ env.PHP_EXECUTABLE_PATH }}
+
+      - name: Upload coverage report to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./library/build/reports/kover/report.xml
+          fail_ci_if_error: true
