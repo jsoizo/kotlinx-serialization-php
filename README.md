@@ -1,5 +1,10 @@
 # kotlinx-serialization-php
 
+## About
+
+This is a Kotlin library that provides [PHP serialization](https://www.php.net/manual/en/function.serialize.php) format support for kotlinx.serialization.  
+It supports some kotlin targets(JVM, iOS, Android)
+
 ## Usage
 
 encoding
