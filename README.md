@@ -1,5 +1,7 @@
 # kotlinx-serialization-php
 
+[![codecov](https://codecov.io/gh/jsoizo/kotlinx-serialization-php/graph/badge.svg?token=akOxbdLONY)](https://codecov.io/gh/jsoizo/kotlinx-serialization-php)
+
 ## About
 
 This is a Kotlin library that provides [PHP serialization](https://www.php.net/manual/en/function.serialize.php) format support for kotlinx.serialization.  
