@@ -45,7 +45,7 @@ powerAssert {
 }
 
 android {
-    namespace = "com.codmon.serialization.php"
+    namespace = "com.jsoizo.serialization.php"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()

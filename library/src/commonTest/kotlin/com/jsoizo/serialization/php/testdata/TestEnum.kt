@@ -1,4 +1,4 @@
-package com.codmon.serialization.php.testdata
+package com.jsoizo.serialization.php.testdata
 
 import kotlinx.serialization.Serializable
 

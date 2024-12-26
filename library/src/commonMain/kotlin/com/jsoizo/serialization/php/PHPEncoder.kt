@@ -1,4 +1,4 @@
-package com.codmon.serialization.php
+package com.jsoizo.serialization.php
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.descriptors.*

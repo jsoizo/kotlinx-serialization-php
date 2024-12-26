@@ -1,8 +1,8 @@
-package com.codmon.serialization.php
+package com.jsoizo.serialization.php
 
-import com.codmon.serialization.php.testdata.SimpleClass
-import com.codmon.serialization.php.testdata.TestEnum
-import com.codmon.serialization.php.testdata.TestSealed
+import com.jsoizo.serialization.php.testdata.SimpleClass
+import com.jsoizo.serialization.php.testdata.TestEnum
+import com.jsoizo.serialization.php.testdata.TestSealed
 import kotlinx.serialization.encodeToString
 import kotlin.test.Test
 import kotlin.test.assertEquals

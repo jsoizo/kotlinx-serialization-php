@@ -1,4 +1,4 @@
-import com.codmon.serialization.php.PHP
+import com.jsoizo.serialization.php.PHP
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
