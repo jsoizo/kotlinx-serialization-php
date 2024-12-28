@@ -14,6 +14,7 @@ plugins {
 
 group = "com.jsoizo"
 version = "0.1.0"
+val projectName = "kotlinx-serialization-php"
 
 kotlin {
     jvm()
@@ -62,23 +63,27 @@ mavenPublishing {
 
     signAllPublications()
 
-    coordinates(group.toString(), "library", version.toString())
+    coordinates(group.toString(), projectName, version.toString())
+
+    val repo = "github.com/jsoizo/${projectName}"
+    val repoHttpUrl = "https://${repo}"
+    val repoGitUrl = "git://${repo}"
 
     pom {
-        name = "kotlinx-serialization-php"
+        name = projectName
         description = "PHP support for kotlinx.serialization"
         inceptionYear = "2024"
-        url = "https://github.com/jsoizo/kotlinx-serialization-php"
+        url = repoHttpUrl
         licenses {
             license {
                 name.set("MIT")
-                url.set("https://github.com/jsoizo/kotlinx-serialization-php/blob/master/LICENSE")
+                url.set("${repoHttpUrl}/blob/master/LICENSE")
             }
         }
         scm {
-            url.set("https://github.com/jsoizo/kotlinx-serialization-php")
-            connection.set("scm:git:git://github.com/jsoizo/kotlinx-serialization-php.git")
-            developerConnection.set("https://github.com/jsoizo/kotlinx-serialization-php")
+            url.set(repoHttpUrl)
+            connection.set("scm:git:${repoGitUrl}.git")
+            developerConnection.set(repoHttpUrl)
         }
         developers {
             developer {
