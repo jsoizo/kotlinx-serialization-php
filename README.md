@@ -1,11 +1,22 @@
 # kotlinx-serialization-php
 
+![Maven Central Version](https://img.shields.io/maven-central/v/com.jsoizo/kotlinx-serialization-php)
 [![codecov](https://codecov.io/gh/jsoizo/kotlinx-serialization-php/graph/badge.svg?token=akOxbdLONY)](https://codecov.io/gh/jsoizo/kotlinx-serialization-php)
 
 ## About
 
 This is a Kotlin library that provides [PHP serialization](https://www.php.net/manual/en/function.serialize.php) format support for kotlinx.serialization.  
 It supports some kotlin targets(JVM, iOS, Android)
+
+## Installation
+
+Add the following dependency to your `build.gradle.kts` or `build.gradle` file:
+
+```kotlin
+dependencies {
+    implementation("com.jsoizo:kotlinx-serialization-php:0.1.0")
+}
+```
 
 ## Usage
 
