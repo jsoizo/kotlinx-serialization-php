@@ -90,20 +90,20 @@ class PHPInteroperabilityTest {
     }
 
     // For escaping dollar sign in PHP script
-    val D = '$'
+    private val dollar = '$'
 
     fun generateAssertionPHPScript(script: String): String {
         return """
             <?php
-            ${D}fileName = ${D}argv[1];
-            ${D}decodedData = null;
+            ${dollar}fileName = ${dollar}argv[1];
+            ${dollar}decodedData = null;
             
             // read file and unserialize
             function decodeFile() {
-                global ${D}fileName, ${D}decodedData;
-                echo "Decoding file: ${D}fileName\n";
-                ${D}encodedData = file_get_contents(${D}fileName);
-                ${D}decodedData = unserialize(${D}encodedData);
+                global ${dollar}fileName, ${dollar}decodedData;
+                echo "Decoding file: ${dollar}fileName\n";
+                ${dollar}encodedData = file_get_contents(${dollar}fileName);
+                ${dollar}decodedData = unserialize(${dollar}encodedData);
                 echo "Decoding process completed.\n";
             }
             
@@ -116,12 +116,12 @@ class PHPInteroperabilityTest {
     fun generateEncodePHPScript(script: String): String {
         return """
             <?php
-            ${D}encodedFileName = ${D}argv[1];
+            ${dollar}encodedFileName = ${dollar}argv[1];
              
-            function encodeAndSaveToFile(${D}data) {
-                global ${D}encodedFileName;
-                ${D}encodedData = serialize(${D}data);
-                file_put_contents(${D}encodedFileName, ${D}encodedData);
+            function encodeAndSaveToFile(${dollar}data) {
+                global ${dollar}encodedFileName;
+                ${dollar}encodedData = serialize(${dollar}data);
+                file_put_contents(${dollar}encodedFileName, ${dollar}encodedData);
             }
             
             $script
@@ -162,21 +162,21 @@ class PHPInteroperabilityTest {
         val assertClass =
             """
             class TestClass {
-                public ${D}string = "Hello, World!";
-                public ${D}int = 42;
-                public ${D}long = 9223372036854775807;
-                public ${D}float = 3.4028235E38;
-                public ${D}double = 1.7976931348623157E308;
-                public ${D}boolean = true;
-                public ${D}list = array("a", "b", "c");
-                public ${D}map = array("x" => 1, "y" => 2, "z" => 3);
-                public ${D}nullableString = null;
-                public ${D}char = 'K';
+                public ${dollar}string = "Hello, World!";
+                public ${dollar}int = 42;
+                public ${dollar}long = 9223372036854775807;
+                public ${dollar}float = 3.4028235E38;
+                public ${dollar}double = 1.7976931348623157E308;
+                public ${dollar}boolean = true;
+                public ${dollar}list = array("a", "b", "c");
+                public ${dollar}map = array("x" => 1, "y" => 2, "z" => 3);
+                public ${dollar}nullableString = null;
+                public ${dollar}char = 'K';
             }
             decodeFile();
-            assert(is_object(${D}decodedData));
-            assert(${D}decodedData instanceof TestClass);
-            assert(${D}decodedData == new TestClass());
+            assert(is_object(${dollar}decodedData));
+            assert(${dollar}decodedData instanceof TestClass);
+            assert(${dollar}decodedData == new TestClass());
             """.trimIndent()
         val assertEnum =
             """
@@ -186,17 +186,17 @@ class PHPInteroperabilityTest {
                 case THREE;
             }
             decodeFile();
-            assert(${D}decodedData === TestEnum::TWO);
+            assert(${dollar}decodedData === TestEnum::TWO);
             """.trimIndent()
         val assertSealed =
             """
             class SubClass1 {
-                public ${D}value = 100;
+                public ${dollar}value = 100;
             }
             decodeFile();
-            assert(is_object(${D}decodedData));
-            assert(${D}decodedData instanceof SubClass1);
-            assert(${D}decodedData == new SubClass1());
+            assert(is_object(${dollar}decodedData));
+            assert(${dollar}decodedData instanceof SubClass1);
+            assert(${dollar}decodedData == new SubClass1());
             """.trimIndent()
         val assertionScriptClass = generateAssertionPHPScript(assertClass)
         val assertionScriptEnum = generateAssertionPHPScript(assertEnum)
@@ -219,16 +219,16 @@ class PHPInteroperabilityTest {
         val encodeClass =
             """
             class TestClass {
-                public ${D}string = "Hello from PHP!";
-                public ${D}int = 100;
-                public ${D}long = 9876543210;
-                public ${D}float = 3.14;
-                public ${D}double = 3.14159;
-                public ${D}boolean = false;
-                public ${D}list = array("php", "kotlin", "interop");
-                public ${D}map = array("a" => 1, "b" => 2, "c" => 3);
-                public ${D}nullableString = 'Not Null';
-                public ${D}char = 'P';
+                public ${dollar}string = "Hello from PHP!";
+                public ${dollar}int = 100;
+                public ${dollar}long = 9876543210;
+                public ${dollar}float = 3.14;
+                public ${dollar}double = 3.14159;
+                public ${dollar}boolean = false;
+                public ${dollar}list = array("php", "kotlin", "interop");
+                public ${dollar}map = array("a" => 1, "b" => 2, "c" => 3);
+                public ${dollar}nullableString = 'Not Null';
+                public ${dollar}char = 'P';
             }
             encodeAndSaveToFile(new TestClass());
             """.trimIndent()

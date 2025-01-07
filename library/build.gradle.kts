@@ -38,11 +38,26 @@ kotlin {
 
     mingwX64()
 
-    wasmJs()
+    wasmJs {
+        browser {
+            testTask {
+                useKarma {
+                    useChromeHeadless()
+                }
+            }
+        }
+    }
+
     wasmWasi()
 
     js {
-        browser()
+        browser {
+            testTask {
+                useKarma {
+                    useChromeHeadless()
+                }
+            }
+        }
         nodejs()
     }
 
@@ -81,9 +96,9 @@ mavenPublishing {
 
     coordinates(group.toString(), projectName, version.toString())
 
-    val repo = "github.com/jsoizo/${projectName}"
-    val repoHttpUrl = "https://${repo}"
-    val repoGitUrl = "git://${repo}"
+    val repo = "github.com/jsoizo/$projectName"
+    val repoHttpUrl = "https://$repo"
+    val repoGitUrl = "git://$repo"
 
     pom {
         name = projectName
@@ -93,12 +108,12 @@ mavenPublishing {
         licenses {
             license {
                 name.set("MIT")
-                url.set("${repoHttpUrl}/blob/master/LICENSE")
+                url.set("$repoHttpUrl/blob/master/LICENSE")
             }
         }
         scm {
             url.set(repoHttpUrl)
-            connection.set("scm:git:${repoGitUrl}.git")
+            connection.set("scm:git:$repoGitUrl.git")
             developerConnection.set(repoHttpUrl)
         }
         developers {

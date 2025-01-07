@@ -52,10 +52,11 @@ class PHPEncoder(
     }
 
     private val floatScale = 10.0.pow(7)
+
     private fun floatFormat(value: Float): String {
         val str = value.toString()
         val parts = str.split("e+")
-        when(parts.size) {
+        when (parts.size) {
             1 -> return str
             2 -> {
                 val mantissa = parts[0].toDouble()

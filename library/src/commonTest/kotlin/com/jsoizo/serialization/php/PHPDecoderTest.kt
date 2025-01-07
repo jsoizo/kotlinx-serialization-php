@@ -125,6 +125,7 @@ class PHPDecoderTest {
 
     @Test
     fun decodeComplexClassTest() {
+        @Suppress("ktlint:standard:max-line-length")
         val input = "O:12:\"ComplexClass\":3:{s:1:\"a\";i:1;s:1:\"b\";a:2:{i:0;O:11:\"SimpleClass\":2:{s:1:\"a\";i:2;s:1:\"b\";s:3:\"foo\";}i:1;O:11:\"SimpleClass\":2:{s:1:\"a\";i:3;s:1:\"b\";s:3:\"bar\";}}s:1:\"c\";s:3:\"baz\";}"
         val result = PHP.decodeFromString<ComplexClass>(input)
         assertEquals(ComplexClass(1, listOf(SimpleClass(2, "foo"), SimpleClass(3, "bar")), "baz"), result)
