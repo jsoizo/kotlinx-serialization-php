@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "com.jsoizo"
-version = "0.1.0"
+version = "0.2.0"
 val projectName = "kotlinx-serialization-php"
 
 kotlin {
