@@ -70,4 +70,5 @@ Kotlin types that can be serialized to and deserialized from PHP serialization f
 
 - JVM
 - Android
-- Native(iOS)
+- Native
+- WebAssembly

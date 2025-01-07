@@ -13,11 +13,12 @@ plugins {
 }
 
 group = "com.jsoizo"
-version = "0.1.0"
+version = "0.2.0"
 val projectName = "kotlinx-serialization-php"
 
 kotlin {
     jvm()
+
     androidTarget {
         publishLibraryVariants("release")
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -25,10 +26,43 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_1_8)
         }
     }
+
     iosX64()
     iosArm64()
     iosSimulatorArm64()
+    macosArm64()
+    macosX64()
+
     linuxX64()
+    linuxArm64()
+
+    mingwX64()
+
+    wasmJs {
+        browser {
+            testTask {
+                useKarma {
+                    useChromeHeadless()
+                }
+            }
+        }
+    }
+
+    wasmWasi {
+        nodejs()
+        binaries.executable()
+    }
+
+    js {
+        browser {
+            testTask {
+                useKarma {
+                    useChromeHeadless()
+                }
+            }
+        }
+        nodejs()
+    }
 
     sourceSets {
         val commonMain by getting {
@@ -65,9 +99,9 @@ mavenPublishing {
 
     coordinates(group.toString(), projectName, version.toString())
 
-    val repo = "github.com/jsoizo/${projectName}"
-    val repoHttpUrl = "https://${repo}"
-    val repoGitUrl = "git://${repo}"
+    val repo = "github.com/jsoizo/$projectName"
+    val repoHttpUrl = "https://$repo"
+    val repoGitUrl = "git://$repo"
 
     pom {
         name = projectName
@@ -77,12 +111,12 @@ mavenPublishing {
         licenses {
             license {
                 name.set("MIT")
-                url.set("${repoHttpUrl}/blob/master/LICENSE")
+                url.set("$repoHttpUrl/blob/master/LICENSE")
             }
         }
         scm {
             url.set(repoHttpUrl)
-            connection.set("scm:git:${repoGitUrl}.git")
+            connection.set("scm:git:$repoGitUrl.git")
             developerConnection.set(repoHttpUrl)
         }
         developers {

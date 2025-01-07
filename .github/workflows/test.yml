@@ -28,6 +28,11 @@ jobs:
       - name: set PHP Path to PHP_EXECUTABLE_PATH env
         run: echo "PHP_EXECUTABLE_PATH=$(which php)" >> $GITHUB_ENV
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
