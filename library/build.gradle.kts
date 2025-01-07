@@ -48,7 +48,10 @@ kotlin {
         }
     }
 
-    wasmWasi()
+    wasmWasi {
+        nodejs()
+        binaries.executable()
+    }
 
     js {
         browser {
