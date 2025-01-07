@@ -1,6 +1,6 @@
 # kotlinx-serialization-php
 
-![Maven Central Version](https://img.shields.io/maven-central/v/com.jsoizo/kotlinx-serialization-php)
+[![Maven Central Version](https://img.shields.io/maven-central/v/com.jsoizo/kotlinx-serialization-php)](https://central.sonatype.com/artifact/com.jsoizo/kotlinx-serialization-php/overview)
 [![codecov](https://codecov.io/gh/jsoizo/kotlinx-serialization-php/graph/badge.svg?token=akOxbdLONY)](https://codecov.io/gh/jsoizo/kotlinx-serialization-php)
 
 ## About
@@ -65,3 +65,9 @@ Kotlin types that can be serialized to and deserialized from PHP serialization f
 | `enum class`               | ✅                         | `E`                    |
 | `sealed class`             | ⚠️ Only supports encoding | `O`                     |
 | `Nullable`                 | ✅                         | `N`                    |
+
+## Supported Platforms
+
+- JVM
+- Android
+- Native(iOS)
