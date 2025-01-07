@@ -53,6 +53,10 @@ class PHPEncoder(
 
     private val floatScale = 10.0.pow(7)
 
+    /**
+     * 1. Convert the scientific notation e+ to E in Kotlin/JS and Kotlin/Wasm.
+     * 2. Round the mantissa to 7 decimal places in Kotlin/Wasm.
+     */
     private fun floatFormat(value: Float): String {
         val str = value.toString()
         val parts = str.split("e+")
@@ -72,6 +76,9 @@ class PHPEncoder(
         sb.append("d:${doubleFormat(value)};")
     }
 
+    /**
+     *  Convert the scientific notation e+ to E in Kotlin/JS and Kotlin/Wasm.
+     */
     private fun doubleFormat(value: Double): String {
         return value.toString().replace("e+", "E")
     }
