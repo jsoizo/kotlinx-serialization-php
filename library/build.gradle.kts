@@ -18,6 +18,7 @@ val projectName = "kotlinx-serialization-php"
 
 kotlin {
     jvm()
+
     androidTarget {
         publishLibraryVariants("release")
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -25,10 +26,25 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_1_8)
         }
     }
+
     iosX64()
     iosArm64()
     iosSimulatorArm64()
+    macosArm64()
+    macosX64()
+
     linuxX64()
+    linuxArm64()
+
+    mingwX64()
+
+    wasmJs()
+    wasmWasi()
+
+    js {
+        browser()
+        nodejs()
+    }
 
     sourceSets {
         val commonMain by getting {
