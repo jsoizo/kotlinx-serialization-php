@@ -1,6 +1,8 @@
 import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -73,6 +75,22 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 implementation(libs.kotlin.test)
+            }
+        }
+        val nativeMain by creating {
+            dependsOn(commonMain)
+        }
+        val wasmCommonMain by creating {
+            dependsOn(commonMain)
+        }
+        targets.withType<KotlinNativeTarget>().forEach { target ->
+            target.compilations.getByName("main").defaultSourceSet {
+                dependsOn(nativeMain)
+            }
+        }
+        targets.withType<KotlinWasmTargetDsl>().forEach { target ->
+            target.compilations.getByName("main").defaultSourceSet {
+                dependsOn(wasmCommonMain)
             }
         }
     }

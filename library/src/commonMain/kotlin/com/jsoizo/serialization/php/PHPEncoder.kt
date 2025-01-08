@@ -8,13 +8,13 @@ import kotlinx.serialization.encoding.AbstractEncoder
 import kotlinx.serialization.encoding.CompositeEncoder
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
-import kotlin.math.pow
-import kotlin.math.roundToInt
 
 @OptIn(ExperimentalSerializationApi::class)
 class PHPEncoder(
     override val serializersModule: SerializersModule = EmptySerializersModule(),
 ) : AbstractEncoder() {
+    private val valueFormatter = ValueFormatter()
+
     private val sb = StringBuilder()
 
     fun getOutput(): String {
@@ -48,39 +48,11 @@ class PHPEncoder(
     }
 
     override fun encodeFloat(value: Float) {
-        sb.append("d:${floatFormat(value)};")
-    }
-
-    private val floatScale = 10.0.pow(7)
-
-    /**
-     * 1. Convert the scientific notation e+ to E in Kotlin/JS and Kotlin/Wasm.
-     * 2. Round the mantissa to 7 decimal places in Kotlin/Wasm.
-     */
-    private fun floatFormat(value: Float): String {
-        val str = value.toString()
-        val parts = str.split("e+")
-        when (parts.size) {
-            1 -> return str
-            2 -> {
-                val mantissa = parts[0].toDouble()
-                val exponent = parts[1]
-                val roundedMantissa = (mantissa * floatScale).roundToInt() / floatScale
-                return "${roundedMantissa}E$exponent"
-            }
-            else -> throw IllegalArgumentException("Invalid float format: $str")
-        }
+        sb.append("d:${valueFormatter.formatFloat(value)};")
     }
 
     override fun encodeDouble(value: Double) {
-        sb.append("d:${doubleFormat(value)};")
-    }
-
-    /**
-     *  Convert the scientific notation e+ to E in Kotlin/JS and Kotlin/Wasm.
-     */
-    private fun doubleFormat(value: Double): String {
-        return value.toString().replace("e+", "E")
+        sb.append("d:${valueFormatter.formatDouble(value)};")
     }
 
     override fun encodeChar(value: Char) {
