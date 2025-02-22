@@ -4,7 +4,7 @@ kotlin = "2.0.0"
 maven-publish = "0.30.0"
 android-minSdk = "24"
 android-compileSdk = "34"
-kover = "0.8.2"
+kover = "0.9.1"
 ktlint = "12.1.1"
 kotlinx-serialization = "1.7.1"
 
