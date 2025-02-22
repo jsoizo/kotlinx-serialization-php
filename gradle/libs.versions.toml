@@ -6,7 +6,7 @@ android-minSdk = "24"
 android-compileSdk = "34"
 kover = "0.8.2"
 ktlint = "12.1.1"
-kotlinx-serialization = "1.7.1"
+kotlinx-serialization = "1.8.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
