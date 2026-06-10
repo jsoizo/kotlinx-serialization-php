@@ -8,6 +8,7 @@ import java.util.Properties
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class PHPInteroperabilityTest {
     private val phpExecutablePath: String
@@ -211,6 +212,57 @@ class PHPInteroperabilityTest {
         executePhpScript("assert_class.php", "encoded_class.txt")
         executePhpScript("assert_enum.php", "encoded_enum.txt")
         executePhpScript("assert_sealed.php", "encoded_sealed.txt")
+    }
+
+    @Serializable
+    data class SpecialFloats(
+        val nan: Double,
+        val inf: Double,
+        val negInf: Double,
+    )
+
+    @Test
+    fun testKotlinEncodePHPDecodeSpecialFloats() {
+        val encoded = PHP.encodeToString(SpecialFloats(Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY))
+        File(testResourcesPath, "encoded_special_floats.txt").writeText(encoded)
+
+        val assertScript =
+            """
+            class SpecialFloats {
+                public ${dollar}nan;
+                public ${dollar}inf;
+                public ${dollar}negInf;
+            }
+            decodeFile();
+            assert(is_nan(${dollar}decodedData->nan));
+            assert(${dollar}decodedData->inf === INF);
+            assert(${dollar}decodedData->negInf === -INF);
+            """.trimIndent()
+        File(testResourcesPath, "assert_special_floats.php").writeText(generateAssertionPHPScript(assertScript))
+
+        executePhpScript("assert_special_floats.php", "encoded_special_floats.txt")
+    }
+
+    @Test
+    fun testPHPEncodeKotlinDecodeSpecialFloats() {
+        val encodeScript =
+            """
+            class SpecialFloats {
+                public ${dollar}nan = NAN;
+                public ${dollar}inf = INF;
+                public ${dollar}negInf = -INF;
+            }
+            encodeAndSaveToFile(new SpecialFloats());
+            """.trimIndent()
+        File(testResourcesPath, "encode_special_floats.php").writeText(generateEncodePHPScript(encodeScript))
+        executePhpScript("encode_special_floats.php", "php_encoded_special_floats.txt")
+
+        val encoded = File(testResourcesPath, "php_encoded_special_floats.txt").readText()
+        val decoded = PHP.decodeFromString<SpecialFloats>(encoded)
+
+        assertTrue(decoded.nan.isNaN())
+        assertEquals(Double.POSITIVE_INFINITY, decoded.inf)
+        assertEquals(Double.NEGATIVE_INFINITY, decoded.negInf)
     }
 
     @Serializable

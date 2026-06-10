@@ -14,8 +14,6 @@ class PHPEncoder(
 ) : AbstractEncoder() {
     override val serializersModule: SerializersModule = config.serializersModule
 
-    private val valueFormatter = ValueFormatter()
-
     private val sb = StringBuilder()
 
     fun getOutput(): String {
@@ -49,11 +47,11 @@ class PHPEncoder(
     }
 
     override fun encodeFloat(value: Float) {
-        sb.append("d:${valueFormatter.formatFloat(value)};")
+        sb.append("d:${ValueFormatter.formatFloat(value)};")
     }
 
     override fun encodeDouble(value: Double) {
-        sb.append("d:${valueFormatter.formatDouble(value)};")
+        sb.append("d:${ValueFormatter.formatDouble(value)};")
     }
 
     override fun encodeChar(value: Char) {
