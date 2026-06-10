@@ -55,7 +55,7 @@ class PHPEncoder(
     }
 
     override fun encodeChar(value: Char) {
-        sb.append("s:1:\"$value\";")
+        encodeString(value.toString())
     }
 
     override fun encodeString(value: String) {
@@ -69,7 +69,8 @@ class PHPEncoder(
     ) {
         val serialName = enumDescriptor.phpClassName()
         val name = enumDescriptor.getElementName(index)
-        sb.append("E:${serialName.length + name.length + 1}:\"$serialName:${name}\";")
+        val value = "$serialName:$name"
+        sb.append("E:${value.encodeToByteArray().size}:\"$value\";")
     }
 
     override fun beginCollection(

@@ -3,9 +3,17 @@ package com.jsoizo.serialization.php
 import com.jsoizo.serialization.php.testdata.SimpleClass
 import com.jsoizo.serialization.php.testdata.TestEnum
 import com.jsoizo.serialization.php.testdata.TestSealed
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlin.test.Test
 import kotlin.test.assertEquals
+
+@Serializable
+enum class NonAsciiNameEnum {
+    @SerialName("ハ")
+    HA,
+}
 
 class PHPEncoderTest {
     @Test
@@ -13,6 +21,14 @@ class PHPEncoderTest {
         val char = 'a'
         val result = PHP.encodeToString(char)
         assertEquals("s:1:\"a\";", result)
+    }
+
+    @Test
+    fun encodeNonAsciiCharTest() {
+        // The declared length must count UTF-8 bytes, not characters.
+        val char = 'あ'
+        val result = PHP.encodeToString(char)
+        assertEquals("s:3:\"あ\";", result)
     }
 
     @Test
@@ -62,6 +78,13 @@ class PHPEncoderTest {
         val testEnum: TestEnum = TestEnum.EnumB
         val result = PHP.encodeToString(testEnum)
         assertEquals("E:14:\"TestEnum:EnumB\";", result)
+    }
+
+    @Test
+    fun encodeEnumWithNonAsciiSerialNameTest() {
+        // "NonAsciiNameEnum:ハ" is 17 ASCII chars plus a 3-byte case name.
+        val result = PHP.encodeToString(NonAsciiNameEnum.HA)
+        assertEquals("E:20:\"NonAsciiNameEnum:ハ\";", result)
     }
 
     @Test

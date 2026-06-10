@@ -215,6 +215,51 @@ class PHPInteroperabilityTest {
     }
 
     @Serializable
+    data class NonAsciiData(
+        val text: String,
+        val char: Char,
+    )
+
+    @Test
+    fun testKotlinEncodePHPDecodeNonAscii() {
+        val encoded = PHP.encodeToString(NonAsciiData("こんにちは世界", 'あ'))
+        File(testResourcesPath, "encoded_non_ascii.txt").writeText(encoded)
+
+        val assertScript =
+            """
+            class NonAsciiData {
+                public ${dollar}text;
+                public ${dollar}char;
+            }
+            decodeFile();
+            assert(${dollar}decodedData->text === "こんにちは世界");
+            assert(${dollar}decodedData->char === "あ");
+            """.trimIndent()
+        File(testResourcesPath, "assert_non_ascii.php").writeText(generateAssertionPHPScript(assertScript))
+
+        executePhpScript("assert_non_ascii.php", "encoded_non_ascii.txt")
+    }
+
+    @Test
+    fun testPHPEncodeKotlinDecodeNonAscii() {
+        val encodeScript =
+            """
+            class NonAsciiData {
+                public ${dollar}text = "こんにちは世界";
+                public ${dollar}char = "あ";
+            }
+            encodeAndSaveToFile(new NonAsciiData());
+            """.trimIndent()
+        File(testResourcesPath, "encode_non_ascii.php").writeText(generateEncodePHPScript(encodeScript))
+        executePhpScript("encode_non_ascii.php", "php_encoded_non_ascii.txt")
+
+        val encoded = File(testResourcesPath, "php_encoded_non_ascii.txt").readText()
+        val decoded = PHP.decodeFromString<NonAsciiData>(encoded)
+
+        assertEquals(NonAsciiData("こんにちは世界", 'あ'), decoded)
+    }
+
+    @Serializable
     data class SpecialFloats(
         val nan: Double,
         val inf: Double,
