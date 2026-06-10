@@ -4,11 +4,13 @@ import com.jsoizo.serialization.php.testdata.ComplexClass
 import com.jsoizo.serialization.php.testdata.SimpleClass
 import com.jsoizo.serialization.php.testdata.TestEnum
 import com.jsoizo.serialization.php.testdata.TestSealed
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class PHPDecoderTest {
     @Test
@@ -136,6 +138,94 @@ class PHPDecoderTest {
         val input = "O:7:\"SealedA\":1:{s:1:\"a\";i:1;}"
         assertFailsWith<IllegalArgumentException> {
             PHP.decodeFromString<TestSealed>(input)
+        }
+    }
+
+    @Test
+    fun decodeNonAsciiCharTest() {
+        val input = "s:3:\"あ\";"
+        val result = PHP.decodeFromString<Char>(input)
+        assertEquals('あ', result)
+    }
+
+    @Test
+    fun decodeLongStringWithSurrogatePairTest() {
+        // Regression test: surrogate pairs used to break the decoder when they
+        // crossed an internal 100-character chunk boundary.
+        val value = "a".repeat(99) + "😀" + "b".repeat(10)
+        val input = "s:${value.encodeToByteArray().size}:\"$value\";"
+        val result = PHP.decodeFromString<String>(input)
+        assertEquals(value, result)
+    }
+
+    @Test
+    fun decodeLongMultiByteStringTest() {
+        val value = "あ".repeat(150) + "😀😀😀" + "x".repeat(150)
+        val input = "s:${value.encodeToByteArray().size}:\"$value\";"
+        val result = PHP.decodeFromString<String>(input)
+        assertEquals(value, result)
+    }
+
+    @Test
+    fun decodeTruncatedStringTest() {
+        // The declared byte length exceeds the actual content.
+        val input = "s:100:\"abc\";"
+        assertFailsWith<SerializationException> {
+            PHP.decodeFromString<String>(input)
+        }
+    }
+
+    @Test
+    fun decodeTruncatedIntTest() {
+        val input = "i:1"
+        assertFailsWith<SerializationException> {
+            PHP.decodeFromString<Int>(input)
+        }
+    }
+
+    @Test
+    fun decodeTruncatedListTest() {
+        val input = "a:2:{i:0;i:1;"
+        assertFailsWith<SerializationException> {
+            PHP.decodeFromString<List<Int>>(input)
+        }
+    }
+
+    @Test
+    fun decodeTruncatedClassTest() {
+        val input = "O:11:\"SimpleClass\":2:{s:1:\"a\";i:1;"
+        assertFailsWith<SerializationException> {
+            PHP.decodeFromString<SimpleClass>(input)
+        }
+    }
+
+    @Test
+    fun decodeInvalidIntTest() {
+        val input = "i:abc;"
+        assertFailsWith<SerializationException> {
+            PHP.decodeFromString<Int>(input)
+        }
+    }
+
+    @Test
+    fun decodeNanTest() {
+        assertTrue(PHP.decodeFromString<Double>("d:NAN;").isNaN())
+        assertTrue(PHP.decodeFromString<Float>("d:NAN;").isNaN())
+    }
+
+    @Test
+    fun decodeInfinityTest() {
+        assertEquals(Double.POSITIVE_INFINITY, PHP.decodeFromString<Double>("d:INF;"))
+        assertEquals(Double.NEGATIVE_INFINITY, PHP.decodeFromString<Double>("d:-INF;"))
+        assertEquals(Float.POSITIVE_INFINITY, PHP.decodeFromString<Float>("d:INF;"))
+        assertEquals(Float.NEGATIVE_INFINITY, PHP.decodeFromString<Float>("d:-INF;"))
+    }
+
+    @Test
+    fun decodeInvalidDoubleTest() {
+        val input = "d:hello;"
+        assertFailsWith<SerializationException> {
+            PHP.decodeFromString<Double>(input)
         }
     }
 }
