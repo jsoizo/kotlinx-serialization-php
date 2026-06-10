@@ -228,4 +228,75 @@ class PHPDecoderTest {
             PHP.decodeFromString<Double>(input)
         }
     }
+
+    @Test
+    fun decodeUnknownFieldThrowsTest() {
+        val input = "O:11:\"SimpleClass\":3:{s:1:\"a\";i:1;s:1:\"b\";s:5:\"value\";s:1:\"x\";i:9;}"
+        val e =
+            assertFailsWith<SerializationException> {
+                PHP.decodeFromString<SimpleClass>(input)
+            }
+        assertTrue(e.message!!.contains("'x'"))
+    }
+
+    @Test
+    fun decodeUnknownFieldsIgnoredTest() {
+        // Unknown fields of every value kind (primitive, array, object, null)
+        // around and between the known fields.
+        val nestedObject = "O:11:\"SimpleClass\":2:{s:1:\"a\";i:2;s:1:\"b\";s:1:\"z\";}"
+        val input =
+            "O:11:\"SimpleClass\":5:{" +
+                "s:1:\"x\";i:9;" +
+                "s:1:\"a\";i:1;" +
+                "s:1:\"y\";a:2:{i:0;i:1;i:1;$nestedObject}" +
+                "s:1:\"b\";s:5:\"value\";" +
+                "s:1:\"n\";N;" +
+                "}"
+        val decoder = PHPDecoder(input, PHPConfig(ignoreUnknownKeys = true))
+        val result = decoder.decodeSerializableValue(SimpleClass.serializer())
+        assertEquals(SimpleClass(1, "value"), result)
+    }
+
+    @Test
+    fun decodeProtectedPropertyTest() {
+        // PHP serializes protected properties as "\0*\0name".
+        val mangled = "\u0000*\u0000a"
+        val input =
+            "O:11:\"SimpleClass\":2:{" +
+                "s:${mangled.encodeToByteArray().size}:\"$mangled\";i:1;" +
+                "s:1:\"b\";s:5:\"value\";" +
+                "}"
+        val result = PHP.decodeFromString<SimpleClass>(input)
+        assertEquals(SimpleClass(1, "value"), result)
+    }
+
+    @Test
+    fun decodePrivatePropertyTest() {
+        // PHP serializes private properties as "\0ClassName\0name".
+        val mangled = "\u0000SimpleClass\u0000a"
+        val input =
+            "O:11:\"SimpleClass\":2:{" +
+                "s:${mangled.encodeToByteArray().size}:\"$mangled\";i:1;" +
+                "s:1:\"b\";s:5:\"value\";" +
+                "}"
+        val result = PHP.decodeFromString<SimpleClass>(input)
+        assertEquals(SimpleClass(1, "value"), result)
+    }
+
+    @Test
+    fun decodeDeeplyNestedUnknownFieldThrowsTest() {
+        // Skipping is depth-limited to protect against stack exhaustion.
+        val depth = 600
+        val nested = "a:1:{i:0;".repeat(depth) + "i:1;" + "}".repeat(depth)
+        val input =
+            "O:11:\"SimpleClass\":3:{" +
+                "s:1:\"x\";$nested" +
+                "s:1:\"a\";i:1;" +
+                "s:1:\"b\";s:5:\"value\";" +
+                "}"
+        val decoder = PHPDecoder(input, PHPConfig(ignoreUnknownKeys = true))
+        assertFailsWith<SerializationException> {
+            decoder.decodeSerializableValue(SimpleClass.serializer())
+        }
+    }
 }

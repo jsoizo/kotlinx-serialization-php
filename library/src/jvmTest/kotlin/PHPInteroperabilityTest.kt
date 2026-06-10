@@ -213,6 +213,36 @@ class PHPInteroperabilityTest {
         executePhpScript("assert_sealed.php", "encoded_sealed.txt")
     }
 
+    @Serializable
+    data class VisibilityClass(
+        val publicProp: String,
+        val protectedProp: Int,
+        val privateProp: Boolean,
+    )
+
+    @Test
+    fun testPHPEncodeKotlinDecodeNonPublicProperties() {
+        // PHP mangles protected/private property names in serialized output;
+        // the decoder must match them by their bare names.
+        val encodeVisibility =
+            """
+            class VisibilityClass {
+                public ${dollar}publicProp = "pub";
+                protected ${dollar}protectedProp = 42;
+                private ${dollar}privateProp = true;
+            }
+            encodeAndSaveToFile(new VisibilityClass());
+            """.trimIndent()
+
+        File(testResourcesPath, "encode_visibility.php").writeText(generateEncodePHPScript(encodeVisibility))
+        executePhpScript("encode_visibility.php", "php_encoded_visibility.txt")
+
+        val encoded = File(testResourcesPath, "php_encoded_visibility.txt").readText()
+        val decoded = PHP.decodeFromString<VisibilityClass>(encoded)
+
+        assertEquals(VisibilityClass("pub", 42, true), decoded)
+    }
+
     @Test
     fun testPHPEncodeKotlinDecode() {
         // Generate PHP script for encoding

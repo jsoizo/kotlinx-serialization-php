@@ -49,14 +49,17 @@ private class PHPImpl(config: PHPConfig) : PHP(config)
 
 class PHPConfig(
     val serializersModule: SerializersModule = EmptySerializersModule(),
+    val ignoreUnknownKeys: Boolean = false,
 )
 
 class PHPConfigBuilder internal constructor(php: PHP) {
     val config = php.config
     var serializersModule: SerializersModule = config.serializersModule
+    var ignoreUnknownKeys: Boolean = config.ignoreUnknownKeys
 
     fun build(): PHPConfig =
         PHPConfig(
             serializersModule = serializersModule,
+            ignoreUnknownKeys = ignoreUnknownKeys,
         )
 }

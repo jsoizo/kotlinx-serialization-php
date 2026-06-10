@@ -153,13 +153,23 @@ class PHPDecoder(
                 return current.index - 1
             }
             StructureKind.CLASS -> {
-                if (current.index > descriptor.elementsCount) {
-                    return CompositeDecoder.DECODE_DONE
+                while (true) {
+                    val rawName = decodeString()
+                    // PHP serializes protected properties as "\0*\0name" and
+                    // private ones as "\0Class\0name"; match by the bare name.
+                    val fieldName = rawName.substringAfterLast('\u0000')
+                    val index = descriptor.getElementIndex(fieldName)
+                    current.index++
+                    if (index != CompositeDecoder.UNKNOWN_NAME) return index
+                    if (!config.ignoreUnknownKeys) {
+                        throw SerializationException(
+                            "Unknown field '$fieldName' for class '${descriptor.serialName}'. " +
+                                "Use ignoreUnknownKeys = true in PHPConfig to ignore unknown fields.",
+                        )
+                    }
+                    reader.skipValue()
+                    if (!reader.hasMore() || reader.peek() == '}') return CompositeDecoder.DECODE_DONE
                 }
-                val fieldName = decodeString()
-                val index = descriptor.getElementIndex(fieldName)
-                current.index++
-                return index
             }
             else -> throw IllegalArgumentException("Unsupported structure kind: ${descriptor.kind}")
         }
