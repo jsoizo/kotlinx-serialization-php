@@ -5,9 +5,11 @@ import com.jsoizo.serialization.php.testdata.TestEnum
 import com.jsoizo.serialization.php.testdata.TestSealed
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 @Serializable
 enum class NonAsciiNameEnum {
@@ -106,6 +108,25 @@ class PHPEncoderTest {
         val map = mapOf("key1" to 1, "key2" to 2)
         val result = PHP.encodeToString(map)
         assertEquals("a:2:{s:4:\"key1\";i:1;s:4:\"key2\";i:2;}", result)
+    }
+
+    @Test
+    fun encodeMapWithIntLongAndCharKeysTest() {
+        assertEquals("a:1:{i:5;s:1:\"v\";}", PHP.encodeToString(mapOf(5 to "v")))
+        assertEquals("a:1:{i:7;i:1;}", PHP.encodeToString(mapOf(7L to 1)))
+        assertEquals("a:1:{s:1:\"k\";i:1;}", PHP.encodeToString(mapOf('k' to 1)))
+    }
+
+    @Test
+    fun encodeMapWithInvalidKeyTypeThrowsTest() {
+        // PHP array keys can only be integers or strings.
+        assertFailsWith<SerializationException> { PHP.encodeToString(mapOf(true to 1)) }
+        assertFailsWith<SerializationException> { PHP.encodeToString(mapOf(1.5 to 1)) }
+        assertFailsWith<SerializationException> { PHP.encodeToString(mapOf(1.5f to 1)) }
+        assertFailsWith<SerializationException> { PHP.encodeToString(mapOf(TestEnum.EnumA to 1)) }
+        assertFailsWith<SerializationException> { PHP.encodeToString(mapOf(SimpleClass(1, "a") to 1)) }
+        assertFailsWith<SerializationException> { PHP.encodeToString(mapOf(listOf(1) to 1)) }
+        assertFailsWith<SerializationException> { PHP.encodeToString(mapOf(null as Int? to 1)) }
     }
 
     @Test

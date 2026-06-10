@@ -1,6 +1,7 @@
 package com.jsoizo.serialization.php
 
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.PolymorphicKind
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.StructureKind
@@ -15,6 +16,19 @@ class PHPEncoder(
     override val serializersModule: SerializersModule = config.serializersModule
 
     private val sb = StringBuilder()
+
+    // True while the next value to encode is a map key. PHP array keys can
+    // only be integers or strings; anything else must be rejected up front
+    // because PHP's unserialize would fail on the produced output.
+    private var isEncodingMapKey = false
+
+    private fun requireNotMapKey(type: String) {
+        if (isEncodingMapKey) {
+            throw SerializationException(
+                "PHP array keys must be Int, Long, String or Char, but $type was used as a map key",
+            )
+        }
+    }
 
     fun getOutput(): String {
         return sb.toString()
@@ -31,10 +45,12 @@ class PHPEncoder(
     }
 
     override fun encodeNull() {
+        requireNotMapKey("null")
         sb.append("N;")
     }
 
     override fun encodeBoolean(value: Boolean) {
+        requireNotMapKey("Boolean")
         sb.append("b:${if (value) 1 else 0};")
     }
 
@@ -47,10 +63,12 @@ class PHPEncoder(
     }
 
     override fun encodeFloat(value: Float) {
+        requireNotMapKey("Float")
         sb.append("d:${ValueFormatter.formatFloat(value)};")
     }
 
     override fun encodeDouble(value: Double) {
+        requireNotMapKey("Double")
         sb.append("d:${ValueFormatter.formatDouble(value)};")
     }
 
@@ -67,6 +85,7 @@ class PHPEncoder(
         enumDescriptor: SerialDescriptor,
         index: Int,
     ) {
+        requireNotMapKey("enum ${enumDescriptor.serialName}")
         val serialName = enumDescriptor.phpClassName()
         val name = enumDescriptor.getElementName(index)
         val value = "$serialName:$name"
@@ -77,6 +96,7 @@ class PHPEncoder(
         descriptor: SerialDescriptor,
         collectionSize: Int,
     ): CompositeEncoder {
+        requireNotMapKey(descriptor.serialName)
         when (descriptor.kind) {
             StructureKind.LIST -> sb.append("a:$collectionSize:{")
             StructureKind.MAP -> sb.append("a:$collectionSize:{")
@@ -86,6 +106,7 @@ class PHPEncoder(
     }
 
     override fun beginStructure(descriptor: SerialDescriptor): CompositeEncoder {
+        requireNotMapKey(descriptor.serialName)
         when (descriptor.kind) {
             StructureKind.CLASS -> {
                 val name = descriptor.phpClassName()
@@ -104,6 +125,7 @@ class PHPEncoder(
         descriptor: SerialDescriptor,
         index: Int,
     ): Boolean {
+        isEncodingMapKey = descriptor.kind == StructureKind.MAP && index % 2 == 0
         if (descriptor.kind == StructureKind.CLASS) {
             encodeString(descriptor.getElementName(index))
         }
