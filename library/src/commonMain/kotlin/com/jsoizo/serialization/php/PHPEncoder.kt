@@ -6,13 +6,14 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.encoding.AbstractEncoder
 import kotlinx.serialization.encoding.CompositeEncoder
-import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 
 @OptIn(ExperimentalSerializationApi::class)
 class PHPEncoder(
-    override val serializersModule: SerializersModule = EmptySerializersModule(),
+    config: PHPConfig = PHPConfig(),
 ) : AbstractEncoder() {
+    override val serializersModule: SerializersModule = config.serializersModule
+
     private val valueFormatter = ValueFormatter()
 
     private val sb = StringBuilder()

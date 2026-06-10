@@ -21,7 +21,7 @@ sealed class PHP(
         serializer: SerializationStrategy<T>,
         value: T,
     ): String {
-        val encoder = PHPEncoder()
+        val encoder = PHPEncoder(config)
         encoder.encodeSerializableValue(serializer, value)
         return encoder.getOutput()
     }
@@ -30,7 +30,7 @@ sealed class PHP(
         deserializer: DeserializationStrategy<T>,
         string: String,
     ): T {
-        val decoder = PHPDecoder(string)
+        val decoder = PHPDecoder(string, config)
         return decoder.decodeSerializableValue(deserializer)
     }
 }
@@ -39,7 +39,7 @@ fun PHP(
     from: PHP = PHP,
     builderAction: PHPConfigBuilder.() -> Unit,
 ): PHP {
-    val builder = PHPConfigBuilder(PHP)
+    val builder = PHPConfigBuilder(from)
     builder.builderAction()
     val config = builder.build()
     return PHPImpl(config)
