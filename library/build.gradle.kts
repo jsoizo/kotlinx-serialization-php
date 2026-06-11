@@ -75,6 +75,14 @@ kotlin {
                 implementation(libs.kotlin.test)
             }
         }
+        val jvmTest by getting {
+            dependencies {
+                // kotest-property does not publish wasmWasi artifacts,
+                // so property-based tests live in jvmTest instead of commonTest.
+                implementation(libs.kotest.property)
+                implementation(libs.kotlinx.coroutines.core)
+            }
+        }
     }
 }
 

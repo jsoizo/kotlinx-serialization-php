@@ -7,10 +7,14 @@ android-compileSdk = "34"
 kover = "0.8.2"
 ktlint = "12.1.1"
 kotlinx-serialization = "1.7.1"
+kotest = "5.9.1"
+kotlinx-coroutines = "1.8.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 
 [plugins]
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
